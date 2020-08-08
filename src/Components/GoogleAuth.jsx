@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 export class GoogleAuth extends Component {
     state = { isSignedIn: null }
+
     componentDidMount() {
         window.gapi.load("client:auth2", () => {
             window.gapi.client.init({
@@ -9,9 +10,15 @@ export class GoogleAuth extends Component {
                 scope : "email"
             }).then(()=> {
                 this.auth = window.gapi.auth2.getAuthInstance();
-                this.setState({isSignedIn: this.auth.isSignedIn.get() })
+                this.setState({isSignedIn: this.auth.isSignedIn.get() });
+                this.auth.isSignedIn.listen(this.onAuthChange);
+
             });
         });
+    };
+    
+    onAuthChange = () => {
+        this.setState({ isSignedIn: this.auth.isSignedIn.get() })
     }
     renderAuthButton() {
         if (this.state.isSignedIn === null) {
